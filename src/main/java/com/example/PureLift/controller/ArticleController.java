@@ -1,7 +1,7 @@
 package com.example.PureLift.controller;
 
 
-import com.example.PureLift.Entity.Article;
+import com.example.PureLift.entity.Article;
 import com.example.PureLift.service.ArticleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

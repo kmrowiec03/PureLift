@@ -1,46 +1,37 @@
 package com.example.PureLift.service;
 
+import com.example.PureLift.entity.User;
+import com.example.PureLift.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
+    private final UserRepository userRepository;
 
-    private final Map<Integer, Map<String, String>> users = new HashMap<>() {{
-        put(1, Map.of("id", "1", "name", "Jan Kowalski", "email", "jan@example.com", "password", "1234"));
-        put(2, Map.of("id", "2", "name", "Anna Nowak", "email", "anna@example.com", "password", "abcd"));
-    }};
-
-    public Object getUsers() {
-        return users.values();
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public Map<String, String> getUserById(int id) {
-        return users.get(id);
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 
-    public Map<String, String> addUser(String name, String email, String password) {
-        int newId = users.isEmpty() ? 1 : users.keySet().stream().max(Integer::compareTo).orElse(0) + 1;
-        Map<String, String> newUser = Map.of(
-                "id", String.valueOf(newId),
-                "name", name,
-                "email", email,
-                "password", password
-        );
-        users.put(newId, newUser);
-        return newUser;
+    public Optional<User> getUserById(int id) {
+        return userRepository.findById(id);
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public User addUser(String name, String email, String password) {
+        return userRepository.save(new User(0, name, email, password));
     }
 
     public boolean deleteUserById(int id) {
-        return users.remove(id) != null;
+        return userRepository.deleteById(id);
     }
-
-    public Map<String, String> getUserByEmail(String email) {
-        return users.values().stream()
-                .filter(user -> email.equals(user.get("email")))
-                .findFirst()
-                .orElse(null);
-    }
-
 }

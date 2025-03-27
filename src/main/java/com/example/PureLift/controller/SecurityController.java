@@ -1,11 +1,13 @@
 package com.example.PureLift.controller;
 
+import com.example.PureLift.entity.User;
 import com.example.PureLift.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/security")
@@ -23,15 +25,16 @@ public class SecurityController {
         String email = credentials.get("email");
         String password = credentials.get("password");
 
-        Map<String, String> user = userService.getUserByEmail(email);
+        Optional<User> userOptional = userService.getUserByEmail(email);
 
-        if (user == null || !password.equals(user.get("password"))) {
+        if (userOptional.isEmpty() || !password.equals(userOptional.get().getPassword())) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid email or password"));
         }
 
-        loggedInUsers.put(email, user.get("name"));
+        User user = userOptional.get();
+        loggedInUsers.put(email, user.getName());
 
-        return ResponseEntity.ok(Map.of("message", "Login successful", "name", user.get("name")));
+        return ResponseEntity.ok(Map.of("message", "Login successful", "name", user.getName()));
     }
 
     @PostMapping("/logout")
