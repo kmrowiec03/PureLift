@@ -1,10 +1,12 @@
 package com.example.PureLift.controller;
 
+import com.example.PureLift.entity.User;
 import com.example.PureLift.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,33 +19,30 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getUsers() {
+    public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.ok(userService.getUsers());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable int id) {
-        Map<String, String> user = userService.getUserById(id);
-        if (user == null) {
-            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
-        }
+
+        Optional<User> user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
 
     @PostMapping
-    public ResponseEntity<Object> addUser(@RequestBody Map<String, String> newUser) {
-        if (!newUser.containsKey("name") || !newUser.containsKey("email") || !newUser.containsKey("password")) {
-            return ResponseEntity.status(400).body(Map.of("error", "Name, email, and password are required"));
+    public ResponseEntity<Object> addUser(@RequestBody User newUser) {
+        if (newUser.getName() == null || newUser.getEmail() == null || newUser.getPassword() == null) {
+            return ResponseEntity.status(400).body("Name, email, and password are required");
         }
-        return ResponseEntity.status(201).body(userService.addUser(
-                newUser.get("name"), newUser.get("email"), newUser.get("password")
-        ));
+        User createdUser = userService.addUser(newUser.getName(), newUser.getEmail(), newUser.getPassword());
+        return ResponseEntity.status(201).body(createdUser);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUserById(@PathVariable int id) {
         if (!userService.deleteUserById(id)) {
-            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+            return ResponseEntity.status(404).body("User not found");
         }
         return ResponseEntity.status(204).build();
     }

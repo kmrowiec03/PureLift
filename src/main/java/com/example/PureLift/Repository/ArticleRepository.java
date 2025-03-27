@@ -1,10 +1,9 @@
 package com.example.PureLift.Repository;
 
-import com.example.PureLift.Entity.Article;
+import com.example.PureLift.entity.Article;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ArticleRepository {

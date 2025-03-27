@@ -1,4 +1,5 @@
-package com.example.PureLift.Entity;
+package com.example.PureLift.entity;
+
 
 public class Article {
     private int id;
