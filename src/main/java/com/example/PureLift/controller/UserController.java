@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable int id) {
+    public ResponseEntity<Object> getUserById(@PathVariable Long id) {
 
         Optional<User> user = userService.getUserById(id);
         return ResponseEntity.ok(user);
@@ -35,15 +35,17 @@ public class UserController {
         if (newUser.getName() == null || newUser.getEmail() == null || newUser.getPassword() == null) {
             return ResponseEntity.status(400).body("Name, email, and password are required");
         }
-        User createdUser = userService.addUser(newUser.getName(), newUser.getEmail(), newUser.getPassword());
+        User createdUser = userService.addUser(newUser);
         return ResponseEntity.status(201).body(createdUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUserById(@PathVariable int id) {
-        if (!userService.deleteUserById(id)) {
+    public ResponseEntity<Object> deleteUserById(@PathVariable Long id) {
+        try {
+            userService.deleteUserById(id);
+            return ResponseEntity.status(204).build();
+        }catch (Exception e) {
             return ResponseEntity.status(404).body("User not found");
         }
-        return ResponseEntity.status(204).build();
     }
 }

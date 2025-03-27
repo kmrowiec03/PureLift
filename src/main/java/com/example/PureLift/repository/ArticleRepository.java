@@ -1,4 +1,4 @@
-package com.example.PureLift.Repository;
+package com.example.PureLift.repository;
 
 import com.example.PureLift.entity.Article;
 import org.springframework.stereotype.Repository;

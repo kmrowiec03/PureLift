@@ -1,7 +1,7 @@
 package com.example.PureLift.service;
 
 import com.example.PureLift.entity.Article;
-import com.example.PureLift.Repository.ArticleRepository;
+import com.example.PureLift.repository.ArticleRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
