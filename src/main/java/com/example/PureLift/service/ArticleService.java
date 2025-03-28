@@ -21,6 +21,9 @@ public class ArticleService {
     public List<Article> getPublishedArticles() {
         return articleRepository.findAll().stream().filter(Article::isPublished).toList();
     }
+    public List<Article> getAllArticles() {
+        return articleRepository.findAll();
+    }
 
     public Optional<Article> getArticleById(Long id){
         return articleRepository.findAll().stream().filter(article -> article.getId() == id).findFirst();
@@ -28,5 +31,8 @@ public class ArticleService {
 
     public void changeArticleStatus(Long articleId, boolean published) {
         getArticleById(articleId).ifPresent(article -> article.setPublished(published));
+    }
+    public Article createArticle(Article article) {
+        return articleRepository.save(article);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -20,17 +21,29 @@ public class ArticleController {
 
     @GetMapping
     public ResponseEntity<List<Article>> getPublishedArticles() {
-            return ResponseEntity.ok(articleService.getPublishedArticles());
+        List<Article> articles = articleService.getPublishedArticles();
+        return ResponseEntity.status(200).body(articles);
+    }
+    @GetMapping
+    public ResponseEntity<List<Article>> getAllArticles() {
+        List<Article> articles = articleService.getAllArticles();
+        return ResponseEntity.status(200).body(articles);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
+    public ResponseEntity<Optional<Article>> getArticleById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(articleService.getArticleById(id).get());
+            Optional<Article> article = articleService.getArticleById(id);
+            return ResponseEntity.status(200).body(article);
         }
         catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
 
+    }
+    @PostMapping
+    public ResponseEntity<Article> createArticle(@RequestBody Article article) {
+        Article optionalArticle = articleService.createArticle(article);
+        return ResponseEntity.status(201).body(optionalArticle);
     }
 }
