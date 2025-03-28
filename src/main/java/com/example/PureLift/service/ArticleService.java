@@ -19,14 +19,14 @@ public class ArticleService {
 
 
     public List<Article> getPublishedArticles() {
-        return articleRepository.getAllArticles().stream().filter(Article::isPublished).toList();
+        return articleRepository.findAll().stream().filter(Article::isPublished).toList();
     }
 
-    public Optional<Article> getArticleById(int id) {
-        return articleRepository.getAllArticles().stream().filter(article -> article.getId() == id).findFirst();
+    public Optional<Article> getArticleById(Long id){
+        return articleRepository.findAll().stream().filter(article -> article.getId() == id).findFirst();
     }
 
-    public void changeArticleStatus(int articleId, boolean published) {
+    public void changeArticleStatus(Long articleId, boolean published) {
         getArticleById(articleId).ifPresent(article -> article.setPublished(published));
     }
 }

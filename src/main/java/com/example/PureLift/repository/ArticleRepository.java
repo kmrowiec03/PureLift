@@ -1,22 +1,16 @@
 package com.example.PureLift.repository;
 
 import com.example.PureLift.entity.Article;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ArticleRepository {
-    private static final List<Article> articles = new ArrayList<>();
-
-    static {
-        articles.add(new Article(1, "Low body training", "dvsdfsdfsfdsfdsfds",  true));
-        articles.add(new Article(2, "Upper body training", "aaaaaaa aaaaaaaa aaaaaaaaaaaaaa aaaa aaaaaaaa aaaaa", false));
-    }
+public interface ArticleRepository extends JpaRepository<Article,Long> {
 
 
-    public List<Article> getAllArticles() {
-        return articles;
-    }
+
+    public List<Article> findAll();
 
 }

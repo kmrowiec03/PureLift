@@ -1,20 +1,28 @@
 package com.example.PureLift.entity;
 
+import jakarta.persistence.*;
 
+@Entity
+@Table(name="articles")
 public class Article {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String title;
     private String content;
     private boolean published;
 
-    public Article(int id, String title, String content, boolean published) {
-        this.id = id;
+    public Article( String title, String content, boolean published) {
         this.title = title;
         this.content = content;
         this.published = published;
     }
 
-    public int getId() {
+    public Article() {
+
+    }
+
+    public Long getId() {
         return id;
     }
     public String getTitle() {
@@ -30,4 +38,10 @@ public class Article {
     public void setPublished(boolean published) {
         this.published = published;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
 }
