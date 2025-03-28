@@ -20,22 +20,22 @@ public class SecurityController {
         this.userService = userService;
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<Object> login(@RequestBody Map<String, String> credentials) {
-//        String email = credentials.get("email");
-//        String password = credentials.get("password");
-//
-//        Optional<User> userOptional = userService.getUserByEmail(email);
-//
-//        if (userOptional.isEmpty() || !password.equals(userOptional.get().getPassword())) {
-//            return ResponseEntity.status(401).body(Map.of("error", "Invalid email or password"));
-//        }
-//
-//        User user = userOptional.get();
-//        loggedInUsers.put(email, user.getName());
-//
-//        return ResponseEntity.ok(Map.of("message", "Login successful", "name", user.getName()));
-//    }
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestBody Map<String, String> credentials) {
+        String email = credentials.get("email");
+        String password = credentials.get("password");
+
+        Optional<User> userOptional = userService.getUserByEmail(email);
+
+        if (userOptional.isEmpty() || !password.equals(userOptional.get().getPassword())) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid email or password"));
+        }
+
+        User user = userOptional.get();
+        loggedInUsers.put(email, user.getName());
+
+        return ResponseEntity.ok(Map.of("message", "Login successful", "name", user.getName()));
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<Object> logout(@RequestBody Map<String, String> request) {
