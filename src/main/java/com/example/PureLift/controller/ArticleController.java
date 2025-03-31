@@ -19,7 +19,7 @@ public class ArticleController {
     }
 
 
-    @GetMapping
+    @GetMapping("/published")
     public ResponseEntity<List<Article>> getPublishedArticles() {
         List<Article> articles = articleService.getPublishedArticles();
         return ResponseEntity.status(200).body(articles);
@@ -42,8 +42,12 @@ public class ArticleController {
 
     }
     @PostMapping
-    public ResponseEntity<Article> createArticle(@RequestBody Article article) {
-        Article optionalArticle = articleService.createArticle(article);
-        return ResponseEntity.status(201).body(optionalArticle);
+    public ResponseEntity<?> createArticle(@RequestBody Article article) {
+        try {
+            Article createdArticle = articleService.createArticle(article);
+            return ResponseEntity.status(201).body(createdArticle);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Błąd podczas tworzenia artykułu: " + e.getMessage());
+        }
     }
 }

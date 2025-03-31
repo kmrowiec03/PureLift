@@ -1,6 +1,7 @@
 package com.example.PureLift.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -12,6 +13,8 @@ public class User {
     private String email;
     private String password;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<TrainingPlan> trainingPlans;
 
     public User(String name, String email, String password) {
         this.name = name;
