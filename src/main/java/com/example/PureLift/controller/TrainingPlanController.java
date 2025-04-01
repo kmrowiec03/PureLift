@@ -6,14 +6,14 @@ import com.example.PureLift.entity.TrainingPlan;
 import com.example.PureLift.service.ExerciseService;
 import com.example.PureLift.service.TrainingService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-@RestController("/api/training")
+@RestController
+@RequestMapping("/api/training")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TrainingPlanController {
    private final TrainingService trainingService;
     private final ExerciseService exerciseService;
@@ -22,7 +22,19 @@ public class TrainingPlanController {
        this.trainingService = trainingService;
        this.exerciseService = exerciseService;
    }
-
+    @GetMapping
+    public ResponseEntity<List<TrainingPlan>> getAllTrainingPlans() {
+        List<TrainingPlan> plans = trainingService.getAllTrainingPlans(); // Metoda w serwisie
+        return ResponseEntity.ok(plans);
+    }
+    @GetMapping("/{planId}")
+    public ResponseEntity<TrainingPlan> getTrainingPlan(@PathVariable Long planId) {
+        TrainingPlan trainingPlan = trainingService.getTrainingPlanById(planId);
+        if (trainingPlan == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(trainingPlan);
+    }
     @GetMapping("/{planId}/{dayId}")
     public ResponseEntity<List<Exercise>> getExercisesForDay(@PathVariable Long planId, @PathVariable Long dayId) {
 
