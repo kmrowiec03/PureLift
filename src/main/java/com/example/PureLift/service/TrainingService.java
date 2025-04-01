@@ -7,6 +7,8 @@ import com.example.PureLift.repository.TrainingDayRepository;
 import com.example.PureLift.repository.TrainingPlanRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TrainingService {
     private TrainingPlanRepository trainingPlanRepository;
@@ -27,4 +29,7 @@ public class TrainingService {
                         .filter(day -> day.getId().equals(dayId)).findFirst().orElse(null)).orElse(null);
     }
 
+    public List<TrainingPlan> getAllTrainingPlans() {
+        return trainingPlanRepository.findAll();
+    }
 }
