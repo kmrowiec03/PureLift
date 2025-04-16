@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/security")
+@CrossOrigin(origins = "http://localhost:5173")
 public class SecurityController {
 
     private final UserService userService;
