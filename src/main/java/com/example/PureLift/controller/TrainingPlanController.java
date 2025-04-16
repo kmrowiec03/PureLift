@@ -16,9 +16,9 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:5173")
 public class TrainingPlanController {
    private final TrainingService trainingService;
-    private final ExerciseService exerciseService;
+   private final ExerciseService exerciseService;
 
-   private TrainingPlanController(TrainingService trainingService, ExerciseService exerciseService) {
+   public TrainingPlanController(TrainingService trainingService, ExerciseService exerciseService) {
        this.trainingService = trainingService;
        this.exerciseService = exerciseService;
    }
