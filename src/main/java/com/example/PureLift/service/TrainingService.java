@@ -1,6 +1,10 @@
 package com.example.PureLift.service;
 
 
+import com.example.PureLift.dto.ExerciseDTO;
+import com.example.PureLift.dto.TrainingDayDTO;
+import com.example.PureLift.dto.TrainingPlanDTO;
+import com.example.PureLift.entity.Exercise;
 import com.example.PureLift.entity.TrainingDay;
 import com.example.PureLift.entity.TrainingPlan;
 import com.example.PureLift.repository.TrainingDayRepository;
@@ -8,6 +12,7 @@ import com.example.PureLift.repository.TrainingPlanRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TrainingService {
@@ -18,7 +23,6 @@ public class TrainingService {
         this.trainingPlanRepository = trainingPlanRepository;
         this.trainingDayRepository = trainingDayRepository;
     }
-
     public TrainingPlan getTrainingPlanById(Long id) {
         return trainingPlanRepository.findById(id).orElse(null);
     }
@@ -32,4 +36,41 @@ public class TrainingService {
     public List<TrainingPlan> getAllTrainingPlans() {
         return trainingPlanRepository.findAll();
     }
+
+
+    public TrainingPlanDTO convertToDTO(TrainingPlan trainingPlan) {
+        TrainingPlanDTO dto = new TrainingPlanDTO();
+        dto.setId(trainingPlan.getId());
+        dto.setTitle(trainingPlan.getTitle());
+        dto.setTrainingDays(
+                trainingPlan.getTrainingDays().stream()
+                        .map(this::convertDayToDTO)
+                        .collect(Collectors.toList())
+        );
+        return dto;
+    }
+
+    private TrainingDayDTO convertDayToDTO(TrainingDay trainingDay) {
+        TrainingDayDTO dto = new TrainingDayDTO();
+        dto.setId(trainingDay.getId());
+        dto.setDayNumber(trainingDay.getDayNumber());
+        dto.setExercises(
+                trainingDay.getExercises().stream()
+                        .map(this::convertExerciseToDTO)
+                        .collect(Collectors.toList())
+        );
+        return dto;
+    }
+    private ExerciseDTO convertExerciseToDTO(Exercise exercise) {
+        ExerciseDTO dto = new ExerciseDTO();
+        dto.setId(exercise.getId());
+        dto.setSets(exercise.getSets());
+        dto.setReps(exercise.getReps());
+        dto.setWeight(exercise.getWeight());
+        dto.setExerciseName(exercise.getExerciseTemplate().getName());
+        return dto;
+    }
+
+
+
 }

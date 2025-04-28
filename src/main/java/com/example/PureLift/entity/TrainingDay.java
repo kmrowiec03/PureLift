@@ -23,4 +23,18 @@ public class TrainingDay {
     public Long getId() {
         return id;
     }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public int getDayNumber() {
+        return dayNumber;
+    }
+
+    public TrainingPlan getTrainingPlan() {
+        return trainingPlan;
+    }
+
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
 }
