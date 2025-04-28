@@ -1,58 +1,89 @@
 package com.example.PureLift.entity;
 
+import com.example.PureLift.AppUserRole;
 import jakarta.persistence.*;
-import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+@Setter
+@Getter
+@EqualsAndHashCode
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String username;
     private String email;
     private String password;
+    private AppUserRole appuserRole;
+    private boolean enabled;
+    private boolean locked;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TrainingPlan> trainingPlans;
 
-    public User(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
+    public User(boolean locked,
+                boolean enabled,
+                AppUserRole appuserRole,
+                String password,
+                String email,
+                String username,
+                String name) {
+        this.locked = locked;
+        this.enabled = enabled;
+        this.appuserRole = appuserRole;
         this.password = password;
+        this.email = email;
+        this.username = username;
+        this.name = name;
     }
 
     public User() {
 
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(appuserRole.name());
+        return Collections.singletonList(authority);
     }
 
-    public String getPassword() {
-        return password;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
-    public String getEmail() {
-        return email;
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
     }
 
-    public String getName() {
-        return name;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
+
+
 }
