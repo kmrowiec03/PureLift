@@ -33,8 +33,11 @@ public class TrainingService {
                         .filter(day -> day.getId().equals(dayId)).findFirst().orElse(null)).orElse(null);
     }
 
-    public List<TrainingPlan> getAllTrainingPlans() {
-        return trainingPlanRepository.findAll();
+    public List<TrainingPlan> getTrainingPlansByUserName(String userName) {
+        return trainingPlanRepository.findByUser_Username(userName);
+    }
+    public List<TrainingPlan> getTrainingPlansByUserEmail(String email) {
+        return trainingPlanRepository.findByUser_Email(email);
     }
 
 
