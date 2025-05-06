@@ -1,5 +1,5 @@
 package com.example.PureLift;
 
 public enum AppUserRole {
-    USER, ADMIN
+    ROLE_USER, ROLE_ADMIN
 }
