@@ -4,6 +4,7 @@ import com.example.PureLift.dto.TrainingPlanDTO;
 import com.example.PureLift.entity.Exercise;
 import com.example.PureLift.entity.TrainingDay;
 import com.example.PureLift.entity.TrainingPlan;
+import com.example.PureLift.entity.User;
 import com.example.PureLift.service.ExerciseService;
 import com.example.PureLift.service.TrainingService;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,8 @@ public class TrainingPlanController {
    }
     @GetMapping
     public ResponseEntity<List<TrainingPlanDTO>> getAllTrainingPlans() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = userDetails.getUsername();
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = user.getUsername();
         List<TrainingPlanDTO> plans = trainingService.getTrainingPlansByUserEmail(email).stream()
                 .map(trainingService::convertToDTO)
                 .collect(Collectors.toList());
