@@ -5,6 +5,8 @@ import com.example.PureLift.entity.Exercise;
 import com.example.PureLift.entity.TrainingDay;
 import com.example.PureLift.entity.TrainingPlan;
 import com.example.PureLift.entity.User;
+import com.example.PureLift.exception.TrainingDayNotFoundException;
+import com.example.PureLift.exception.TrainingPlanNotFoundException;
 import com.example.PureLift.service.ExerciseService;
 import com.example.PureLift.service.TrainingService;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +42,7 @@ public class TrainingPlanController {
     public ResponseEntity<TrainingPlanDTO> getTrainingPlan(@PathVariable Long planId) {
         TrainingPlan trainingPlan = trainingService.getTrainingPlanById(planId);
         if (trainingPlan == null) {
-            return ResponseEntity.notFound().build();
+            throw new TrainingPlanNotFoundException(planId);
         }
         return ResponseEntity.ok(trainingService.convertToDTO(trainingPlan));
     }
@@ -48,7 +50,7 @@ public class TrainingPlanController {
     public ResponseEntity<List<Exercise>> getExercisesForDay(@PathVariable Long planId, @PathVariable Long dayId) {
         TrainingDay trainingDay = trainingService.getTrainingDayById(planId, dayId);
         if (trainingDay == null) {
-            return ResponseEntity.notFound().build();
+            throw new TrainingDayNotFoundException(dayId);
         }
         List<Exercise> exercises = exerciseService.getExercisesByTrainingDay(dayId);
         return ResponseEntity.ok(exercises);

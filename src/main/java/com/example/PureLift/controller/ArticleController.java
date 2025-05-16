@@ -2,6 +2,7 @@ package com.example.PureLift.controller;
 
 
 import com.example.PureLift.entity.Article;
+import com.example.PureLift.exception.ArticleNotFoundException;
 import com.example.PureLift.service.ArticleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,23 +33,14 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Article>> getArticleById(@PathVariable Long id) {
-        try {
-            Optional<Article> article = articleService.getArticleById(id);
-            return ResponseEntity.status(200).body(article);
-        }
-        catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-
+    public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
+        Article article = articleService.getArticleById(id)
+                .orElseThrow(() -> new ArticleNotFoundException(id));
+        return ResponseEntity.ok(article);
     }
     @PostMapping
     public ResponseEntity<?> createArticle(@RequestBody Article article) {
-        try {
-            Article createdArticle = articleService.createArticle(article);
-            return ResponseEntity.status(201).body(createdArticle);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Błąd podczas tworzenia artykułu: " + e.getMessage());
-        }
+        Article createdArticle = articleService.createArticle(article);
+        return ResponseEntity.status(201).body(createdArticle);
     }
 }
