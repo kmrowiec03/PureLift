@@ -2,6 +2,7 @@ package com.example.PureLift.security;
 
 import com.example.PureLift.entity.User;
 import com.example.PureLift.service.UserService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import jakarta.servlet.FilterChain;
