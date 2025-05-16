@@ -21,6 +21,16 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email jest już zajęty.");
+        }
+
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Nazwa użytkownika jest już zajęta.");
+        }
+
         var user = User.builder()
                 .name(request.getFirstName())
                 .lastname(request.getLastName())
