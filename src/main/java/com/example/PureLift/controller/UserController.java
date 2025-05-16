@@ -1,6 +1,8 @@
 package com.example.PureLift.controller;
 
 import com.example.PureLift.entity.User;
+import com.example.PureLift.exception.UserNotFoundException;
+import com.example.PureLift.exception.UserValidationException;
 import com.example.PureLift.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,15 +28,16 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable Long id) {
-
-        Optional<User> user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(
+                userService.getUserById(id)
+                        .orElseThrow(() -> new UserNotFoundException(id))
+        );
     }
 
     @PostMapping
     public ResponseEntity<Object> addUser(@RequestBody User newUser) {
         if (newUser.getName() == null || newUser.getEmail() == null || newUser.getPassword() == null) {
-            return ResponseEntity.status(400).body("Name, email, and password are required");
+            throw new UserValidationException("Name, email, and password are required");
         }
         User createdUser = userService.addUser(newUser);
         return ResponseEntity.status(201).body(createdUser);
@@ -42,11 +45,10 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUserById(@PathVariable Long id) {
-        try {
-            userService.deleteUserById(id);
-            return ResponseEntity.status(204).build();
-        }catch (Exception e) {
-            return ResponseEntity.status(404).body("User not found");
+        if (userService.getUserById(id).isEmpty()) {
+            throw new UserNotFoundException(id);
         }
+        userService.deleteUserById(id);
+        return ResponseEntity.noContent().build();
     }
 }
