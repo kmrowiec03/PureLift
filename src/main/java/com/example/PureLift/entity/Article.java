@@ -1,7 +1,11 @@
 package com.example.PureLift.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class Article {
     @Id
@@ -10,6 +14,7 @@ public class Article {
 
     private String title;
     private String content;
+    @Getter
     private boolean published;
 
     public Article( String title, String content, boolean published) {
@@ -20,27 +25,6 @@ public class Article {
 
     public Article() {
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public String getContent() {
-        return content;
-    }
-    public boolean isPublished() {
-        return published;
-    }
-
-    public void setPublished(boolean published) {
-        this.published = published;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
 

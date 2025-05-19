@@ -35,16 +35,25 @@ dependencies {
 
 	// Baza danych (PostgreSQL)
 	runtimeOnly 'org.postgresql:postgresql'
-
 	// Testy
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.mockito:mockito-inline:5.2.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'com.h2database:h2'
+
+	// Walidacja
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
+    jvmArgs = [
+        "-javaagent:${classpath.find { it.name.contains('byte-buddy-agent') }.absolutePath}",
+        '-XX:+EnableDynamicAgentLoading',
+        '-Xshare:off'
+    ]
 }
