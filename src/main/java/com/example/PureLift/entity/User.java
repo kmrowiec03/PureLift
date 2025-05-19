@@ -34,8 +34,8 @@ public class User implements UserDetails {
     private AppUserRole appuserRole;
     @Builder.Default
     @Column(nullable = false)
-    @ColumnDefault("true")
-    private boolean enabled = true;
+    @ColumnDefault("false")
+    private boolean enabled = false;
 
     @Builder.Default
     @Column(nullable = false)
