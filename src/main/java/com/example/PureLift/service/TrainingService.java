@@ -2,6 +2,7 @@ package com.example.PureLift.service;
 
 
 import com.example.PureLift.dto.ExerciseDTO;
+import com.example.PureLift.dto.MuscleDTO;
 import com.example.PureLift.dto.TrainingDayDTO;
 import com.example.PureLift.dto.TrainingPlanDTO;
 import com.example.PureLift.entity.Exercise;
@@ -70,7 +71,20 @@ public class TrainingService {
         dto.setSets(exercise.getSets());
         dto.setReps(exercise.getReps());
         dto.setWeight(exercise.getWeight());
+
         dto.setExerciseName(exercise.getExerciseTemplate().getName());
+        dto.setDescription(exercise.getExerciseTemplate().getDescription());
+
+        List<MuscleDTO> muscleDTOs = exercise.getExerciseTemplate().getTargetedMuscles().stream()
+                .map(etm -> {
+                    MuscleDTO muscleDTO = new MuscleDTO();
+                    muscleDTO.setName(etm.getMuscle().getName());
+                    muscleDTO.setIntensity(etm.getIntensity());
+                    return muscleDTO;
+                }).collect(Collectors.toList());
+
+        dto.setMusclesTargeted(muscleDTOs);
+
         return dto;
     }
 

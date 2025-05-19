@@ -11,10 +11,14 @@ public class ExerciseTemplate {
 
     private String name;
     private String description;
-    private String musclesTargeted;
+
+    @OneToMany(mappedBy = "exerciseTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExerciseTemplateMuscle> targetedMuscles;
 
     @OneToMany(mappedBy = "exerciseTemplate")
     private List<Exercise> exercises;
+
+    // Gettery i settery
 
     public Long getId() {
         return id;
@@ -24,20 +28,12 @@ public class ExerciseTemplate {
         this.id = id;
     }
 
-    public List<Exercise> getExercises() {
-        return exercises;
+    public String getName() {
+        return name;
     }
 
-    public void setExercises(List<Exercise> exercises) {
-        this.exercises = exercises;
-    }
-
-    public String getMusclesTargeted() {
-        return musclesTargeted;
-    }
-
-    public void setMusclesTargeted(String musclesTargeted) {
-        this.musclesTargeted = musclesTargeted;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -48,11 +44,19 @@ public class ExerciseTemplate {
         this.description = description;
     }
 
-    public String getName() {
-        return name;
+    public List<ExerciseTemplateMuscle> getTargetedMuscles() {
+        return targetedMuscles;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTargetedMuscles(List<ExerciseTemplateMuscle> targetedMuscles) {
+        this.targetedMuscles = targetedMuscles;
+    }
+
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<Exercise> exercises) {
+        this.exercises = exercises;
     }
 }
