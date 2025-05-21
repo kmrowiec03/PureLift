@@ -1,6 +1,9 @@
 package com.example.PureLift.security;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/security")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequiredArgsConstructor
 public class SecurityController {
 
@@ -31,10 +34,24 @@ public class SecurityController {
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(service.authenticate(request));
+    public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
+        return service.authenticate(request, response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        service.logout(response);
+        return ResponseEntity.ok().build();
+    }
 
+    @GetMapping("/status")
+    public ResponseEntity<?> checkLoginStatus(HttpServletRequest request) {
+        boolean isLoggedIn = service.isTokenValidFromCookies(request);
+        if (isLoggedIn) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
 }
