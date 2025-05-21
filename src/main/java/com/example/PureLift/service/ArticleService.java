@@ -10,13 +10,11 @@ import java.util.Optional;
 @Service
 public class ArticleService {
 
-
     private final ArticleRepository articleRepository;
 
     public ArticleService(ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
     }
-
 
     public List<Article> getPublishedArticles() {
         return articleRepository.findAll().stream().filter(Article::isPublished).toList();
@@ -25,13 +23,10 @@ public class ArticleService {
         return articleRepository.findAll();
     }
 
-    public Optional<Article> getArticleById(Long id){
-        return articleRepository.findAll().stream().filter(article -> article.getId() == id).findFirst();
+    public Optional<Article> getArticleById(Long id) {
+        return articleRepository.findById(id);
     }
 
-    public void changeArticleStatus(Long articleId, boolean published) {
-        getArticleById(articleId).ifPresent(article -> article.setPublished(published));
-    }
     public Article createArticle(Article article) {
         return articleRepository.save(article);
     }

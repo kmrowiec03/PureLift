@@ -1,6 +1,7 @@
 package com.example.PureLift.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,20 +13,18 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title cannot be blank")
     private String title;
+    @NotBlank(message = "Content cannot be blank")
     private String content;
-    @Getter
     private boolean published;
 
-    public Article( String title, String content, boolean published) {
+    public Article(String title, String content, boolean published) {
         this.title = title;
         this.content = content;
         this.published = published;
     }
 
     public Article() {
-
     }
-
-
 }
