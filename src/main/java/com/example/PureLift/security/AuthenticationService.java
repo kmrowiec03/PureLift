@@ -96,7 +96,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 
-        String accessToken = jwtService.generateToken(user, 60 * 1000);//15MIN
+        String accessToken = jwtService.generateToken(user, 15* 60 * 1000);//15MIN
         String refreshToken = jwtService.generateToken(user,24 * 60 * 60 * 1000);//24H
 
 
@@ -185,7 +185,7 @@ public class AuthenticationService {
                 return forbidden("Refresh token wygasł lub jest nieprawidłowy");
             }
 
-            String newAccessToken = jwtService.generateToken(user, 60 * 1000);//15MIN
+            String newAccessToken = jwtService.generateToken(user, 15* 60 * 1000);//15MIN
 
             ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", newAccessToken)
                     .httpOnly(false)
