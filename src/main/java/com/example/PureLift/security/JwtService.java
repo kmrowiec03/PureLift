@@ -31,18 +31,18 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(User user) {
-        return generateToken(new HashMap<>(), user);
+    public String generateToken(User user,int expiration) {
+        return generateToken(new HashMap<>(), user, expiration);
     }
 
 
-    public String generateToken(Map<String, Object> extraClaims, User user) {
+    public String generateToken(Map<String, Object> extraClaims, User user,int expiration) {
         extraClaims.put("role", user.getAppuserRole().name());
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(),SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -67,6 +67,7 @@ public class JwtService {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
+                .setAllowedClockSkewSeconds(60)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

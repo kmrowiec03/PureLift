@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -47,11 +48,13 @@ public class SecurityController {
     @GetMapping("/status")
     public ResponseEntity<?> checkLoginStatus(HttpServletRequest request) {
         boolean isLoggedIn = service.isTokenValidFromCookies(request);
-        if (isLoggedIn) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("loggedIn", isLoggedIn);
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        return service.refreshToken(request, response);
     }
 
 }
