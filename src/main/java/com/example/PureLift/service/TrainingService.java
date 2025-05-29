@@ -1,17 +1,16 @@
 package com.example.PureLift.service;
 
 
-import com.example.PureLift.dto.ExerciseDTO;
-import com.example.PureLift.dto.MuscleDTO;
-import com.example.PureLift.dto.TrainingDayDTO;
-import com.example.PureLift.dto.TrainingPlanDTO;
-import com.example.PureLift.entity.Exercise;
-import com.example.PureLift.entity.TrainingDay;
-import com.example.PureLift.entity.TrainingPlan;
+import com.example.PureLift.dto.*;
+import com.example.PureLift.entity.*;
+import com.example.PureLift.repository.ExerciseRepository;
+import com.example.PureLift.repository.ExerciseTemplateRepository;
 import com.example.PureLift.repository.TrainingDayRepository;
 import com.example.PureLift.repository.TrainingPlanRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +18,14 @@ import java.util.stream.Collectors;
 public class TrainingService {
     private TrainingPlanRepository trainingPlanRepository;
     private TrainingDayRepository trainingDayRepository;
+    private ExerciseTemplateRepository exerciseTemplateRepository;
 
-    public TrainingService(TrainingPlanRepository trainingPlanRepository, TrainingDayRepository trainingDayRepository) {
+    public TrainingService(TrainingPlanRepository trainingPlanRepository,
+                           TrainingDayRepository trainingDayRepository,
+                           ExerciseTemplateRepository exerciseTemplateRepository) {
         this.trainingPlanRepository = trainingPlanRepository;
         this.trainingDayRepository = trainingDayRepository;
+        this.exerciseTemplateRepository = exerciseTemplateRepository;
     }
     public TrainingPlan getTrainingPlanById(Long id) {
         return trainingPlanRepository.findById(id).orElse(null);
@@ -89,5 +92,47 @@ public class TrainingService {
     }
 
 
+    public TrainingPlan generatePlan(User user, TrainingPlanRequest request) {
+        List<ExerciseTemplate> allTemplates = exerciseTemplateRepository.findAll();
+        if (allTemplates.size() < request.getNumberOfDays() * request.getExercisesPerDay()) {
+            throw new IllegalArgumentException("Zbyt mało szablonów ćwiczeń, aby wygenerować plan.");
+        }
+        Collections.shuffle(allTemplates);
+
+        TrainingPlan plan = new TrainingPlan();
+        plan.setTitle(request.getTitle());
+        plan.setUser(user);
+
+        List<TrainingDay> days = new ArrayList<>();
+        int templateIndex = 0;
+
+        for (int i = 1; i <= request.getNumberOfDays(); i++) {
+            TrainingDay day = new TrainingDay();
+            day.setDayNumber(i);
+            day.setTrainingPlan(plan);
+
+            List<Exercise> exercisesForDay = new ArrayList<>();
+
+            for (int j = 0; j < request.getExercisesPerDay(); j++) {
+                ExerciseTemplate template = allTemplates.get(templateIndex++);
+
+                Exercise exercise = new Exercise();
+                exercise.setTrainingDay(day);
+                exercise.setExerciseTemplate(template);
+                exercise.setSets(3);
+                exercise.setReps(10);
+                exercise.setWeight(0);
+
+                exercisesForDay.add(exercise);
+            }
+
+            day.setExercises(exercisesForDay);
+            days.add(day);
+        }
+
+        plan.setTrainingDays(days);
+
+        return trainingPlanRepository.save(plan);
+    }
 
 }

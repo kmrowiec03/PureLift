@@ -1,6 +1,7 @@
 package com.example.PureLift.controller;
 
 import com.example.PureLift.dto.TrainingPlanDTO;
+import com.example.PureLift.dto.TrainingPlanRequest;
 import com.example.PureLift.dto.WeightUpdateRequest;
 import com.example.PureLift.entity.Exercise;
 import com.example.PureLift.entity.TrainingDay;
@@ -12,6 +13,7 @@ import com.example.PureLift.service.ExerciseService;
 import com.example.PureLift.service.TrainingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +64,15 @@ public class TrainingPlanController {
         exerciseService.updateExerciseWeight(exerciseId, request.getWeight());
         return ResponseEntity.ok().build();
     }
-
+    @PostMapping("/generate")
+    public ResponseEntity<TrainingPlanDTO> generatePlan(
+            @RequestBody TrainingPlanRequest request,
+            @AuthenticationPrincipal User user
+    ) {
+        TrainingPlan plan = trainingService.generatePlan(user, request);
+        TrainingPlanDTO dto = trainingService.convertToDTO(plan);
+        return ResponseEntity.ok(dto);
+    }
 
 
 

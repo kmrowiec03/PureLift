@@ -2,11 +2,15 @@ package com.example.PureLift.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class TrainingDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,21 +24,5 @@ public class TrainingDay {
     @OneToMany(mappedBy = "trainingDay", cascade = CascadeType.ALL)
     private List<Exercise> exercises;
 
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public int getDayNumber() {
-        return dayNumber;
-    }
 
-    public TrainingPlan getTrainingPlan() {
-        return trainingPlan;
-    }
-
-    public List<Exercise> getExercises() {
-        return exercises;
-    }
 }
