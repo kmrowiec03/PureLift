@@ -1,6 +1,7 @@
 package com.example.PureLift.controller;
 
 import com.example.PureLift.dto.TrainingPlanDTO;
+import com.example.PureLift.dto.WeightUpdateRequest;
 import com.example.PureLift.entity.Exercise;
 import com.example.PureLift.entity.TrainingDay;
 import com.example.PureLift.entity.TrainingPlan;
@@ -9,6 +10,7 @@ import com.example.PureLift.exception.TrainingDayNotFoundException;
 import com.example.PureLift.exception.TrainingPlanNotFoundException;
 import com.example.PureLift.service.ExerciseService;
 import com.example.PureLift.service.TrainingService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -54,6 +56,11 @@ public class TrainingPlanController {
         }
         List<Exercise> exercises = exerciseService.getExercisesByTrainingDay(dayId);
         return ResponseEntity.ok(exercises);
+    }
+    @PutMapping("/exercise/{exerciseId}/weight")
+    public ResponseEntity<Void> updateExerciseWeight(@PathVariable Long exerciseId, @RequestBody WeightUpdateRequest request) {
+        exerciseService.updateExerciseWeight(exerciseId, request.getWeight());
+        return ResponseEntity.ok().build();
     }
 
 

@@ -21,4 +21,10 @@ public class ExerciseService {
     public Exercise createExercise(Exercise exercise) {
         return repository.save(exercise);
     }
+    public void updateExerciseWeight(Long exerciseId, Double weight) {
+        Exercise exercise = repository.findById(exerciseId)
+                .orElseThrow(() -> new RuntimeException("Exercise not found with id: " + exerciseId));
+        exercise.setWeight(weight);
+        repository.save(exercise);
+    }
 }
