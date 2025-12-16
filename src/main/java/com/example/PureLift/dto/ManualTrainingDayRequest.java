@@ -2,16 +2,12 @@ package com.example.PureLift.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.List;
 
-@Setter
 @Getter
-public class TrainingDayDTO {
+@Setter
+public class ManualTrainingDayRequest {
     private Long id;
     private int dayNumber;
-    private Integer weekNumber;
-    private List<ExerciseDTO> exercises;
-
-
+    private List<ManualExerciseRequest> exercises;
 }

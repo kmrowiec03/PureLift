@@ -7,7 +7,6 @@ import com.example.PureLift.messaging.EmailMessage;
 import com.example.PureLift.messaging.EmailProducer;
 import com.example.PureLift.repository.TokenRepository;
 import com.example.PureLift.repository.UserRepository;
-import com.example.PureLift.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,7 +37,6 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailProducer emailProducer;;
     private final TokenRepository tokenRepository;
-    private final UserService userService;
 
 
     public ResponseEntity<Map<String, String>> register(RegisterRequest request) {

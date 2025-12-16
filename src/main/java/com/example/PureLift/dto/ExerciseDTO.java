@@ -11,9 +11,10 @@ public class ExerciseDTO {
     private Long id;
     private int sets;
     private int reps;
-    private double weight;
+    private Double weight;
     private String exerciseName;
     private String description;
     private List<MuscleDTO> musclesTargeted;
+    private java.util.Date completedDate;
 
 }

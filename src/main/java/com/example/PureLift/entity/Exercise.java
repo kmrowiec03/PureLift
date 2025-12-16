@@ -10,7 +10,10 @@ public class Exercise {
 
     private int sets;
     private int reps;
-    private double weight;
+    private Double weight;
+
+    @Temporal(TemporalType.DATE)
+    private java.util.Date completedDate;
 
     @ManyToOne
     @JoinColumn(name = "exercise_template_id", nullable = false)
@@ -45,11 +48,11 @@ public class Exercise {
         this.exerciseTemplate = exerciseTemplate;
     }
 
-    public double getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 
@@ -67,5 +70,13 @@ public class Exercise {
 
     public void setSets(int sets) {
         this.sets = sets;
+    }
+
+    public java.util.Date getCompletedDate() {
+        return completedDate;
+    }
+
+    public void setCompletedDate(java.util.Date completedDate) {
+        this.completedDate = completedDate;
     }
 }

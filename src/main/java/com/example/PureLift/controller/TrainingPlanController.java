@@ -1,8 +1,15 @@
 package com.example.PureLift.controller;
 
+import com.example.PureLift.dto.ExerciseUpdateRequest;
+import com.example.PureLift.dto.RepsUpdateRequest;
+import com.example.PureLift.dto.SetsUpdateRequest;
 import com.example.PureLift.dto.TrainingPlanDTO;
 import com.example.PureLift.dto.TrainingPlanRequest;
 import com.example.PureLift.dto.WeightUpdateRequest;
+import com.example.PureLift.dto.ManualTrainingPlanRequest;
+import com.example.PureLift.dto.ManualTrainingDayRequest;
+import com.example.PureLift.dto.ManualExerciseRequest;
+import com.example.PureLift.dto.ExerciseCompletionRequest;
 import com.example.PureLift.entity.Exercise;
 import com.example.PureLift.entity.TrainingDay;
 import com.example.PureLift.entity.TrainingPlan;
@@ -64,9 +71,27 @@ public class TrainingPlanController {
         exerciseService.updateExerciseWeight(exerciseId, request.getWeight());
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/exercise/{exerciseId}")
+    public ResponseEntity<Void> updateExercise(@PathVariable Long exerciseId, @RequestBody ExerciseUpdateRequest request) {
+        exerciseService.updateExercise(exerciseId, request.getSets(), request.getReps(), request.getWeight());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/exercise/{exerciseId}/sets")
+    public ResponseEntity<Void> updateExerciseSets(@PathVariable Long exerciseId, @RequestBody SetsUpdateRequest request) {
+        exerciseService.updateExerciseSets(exerciseId, request.getSets());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/exercise/{exerciseId}/reps")
+    public ResponseEntity<Void> updateExerciseReps(@PathVariable Long exerciseId, @RequestBody RepsUpdateRequest request) {
+        exerciseService.updateExerciseReps(exerciseId, request.getReps());
+        return ResponseEntity.ok().build();
+    }
     @PostMapping("/generate")
     public ResponseEntity<TrainingPlanDTO> generatePlan(
-            @RequestBody TrainingPlanRequest request,
+            @Valid @RequestBody TrainingPlanRequest request,
             @AuthenticationPrincipal User user
     ) {
         TrainingPlan plan = trainingService.generatePlan(user, request);
@@ -74,6 +99,38 @@ public class TrainingPlanController {
         return ResponseEntity.ok(dto);
     }
 
+    @DeleteMapping("/{planId}")
+    public ResponseEntity<Void> deleteTrainingPlan(@PathVariable Long planId) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = user.getUsername();
+        trainingService.deleteTrainingPlan(planId, email);
+        return ResponseEntity.noContent().build();
+    }
 
+    @PostMapping("/create-manual")
+    public ResponseEntity<TrainingPlanDTO> createManualPlan(
+            @Valid @RequestBody ManualTrainingPlanRequest request,
+            @AuthenticationPrincipal User user
+    ) {
+        TrainingPlan plan = trainingService.createManualPlan(user, request);
+        TrainingPlanDTO dto = trainingService.convertToDTO(plan);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/assign-plan")
+    public ResponseEntity<TrainingPlanDTO> assignPlanToUser(
+            @Valid @RequestBody ManualTrainingPlanRequest request,
+            @AuthenticationPrincipal User coach
+    ) {
+        TrainingPlan plan = trainingService.assignPlanToUser(coach, request);
+        TrainingPlanDTO dto = trainingService.convertToDTO(plan);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/exercise/{exerciseId}/completion")
+    public ResponseEntity<Void> markExerciseCompletion(@PathVariable Long exerciseId, @RequestBody ExerciseCompletionRequest request) {
+        exerciseService.markExerciseCompletion(exerciseId, request.isCompleted());
+        return ResponseEntity.ok().build();
+    }
 
 }
