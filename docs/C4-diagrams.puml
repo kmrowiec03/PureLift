@@ -1,0 +1,338 @@
+@startuml PureLift-C4-Frontend-Components
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title PureLift Frontend - C4 Component Diagram
+
+Container(backend, "Backend API", "Spring Boot", "REST API")
+Person(users, "Users", "Użytkownicy systemu")
+
+Container_Boundary(frontend, "React Frontend Application") {
+    
+    ' Routing & Navigation
+    Component(router, "React Router", "react-router-dom", "Routing i nawigacja między stronami")
+    Component(navbar, "Navigation Bar", "NavBar.jsx", "Główne menu nawigacyjne z linkami")
+    
+    ' Authentication Layer
+    Component(authContext, "Auth Context", "AuthContext.jsx", "Globalny stan uwierzytelniania użytkownika")
+    Component(loginComp, "Login Component", "Login.jsx", "Formularz logowania użytkownika")
+    Component(registerComp, "Register Component", "Register.jsx", "Formularz rejestracji nowych użytkowników")
+    
+    ' Core User Features  
+    Component(home, "Home Dashboard", "Home.jsx", "Strona główna z podsumowaniem")
+    Component(profile, "Profile Management", "Profile.jsx", "Zarządzanie danymi osobowymi")
+    
+    ' Training Management
+    Component(trainingPlans, "Training Plans", "TrainingPlans.jsx", "Lista i zarządzanie planami treningowymi")
+    Component(trainingDetails, "Training Details", "TrainingPlanDetails.jsx", "Szczegóły konkretnego planu")
+    Component(exerciseProgress, "Exercise Progress", "ExerciseProgress.jsx", "Śledzenie postępów z wykresami")
+    
+    ' Coach Features
+    Component(coachList, "Coach Selection", "CoachList.jsx", "Przeglądanie i wybór trenerów")
+    Component(myClients, "Client Management", "MyClients.jsx", "Zarządzanie klientami (dla trenerów)")
+    Component(createPlan, "Plan Creation", "CreatePlanPage.jsx", "Tworzenie nowych planów treningowych")
+    Component(generatePlan, "Plan Generator", "GeneratePlanPage.jsx", "Generator automatycznych planów")
+    
+    ' Admin Features
+    Component(adminPanel, "Admin Panel", "AdminPermissions.jsx", "Panel administracyjny systemu")
+    
+    ' API Communication
+    Component(apiClient, "Axios Client", "axios.js", "HTTP client do komunikacji z backend API")
+    Component(apiHelpers, "API Helpers", "getCookie, parseJwt", "Narzędzia do obsługi JWT i cookies")
+}
+
+' User Interactions
+Rel(users, navbar, "Nawiguje po aplikacji")
+Rel(users, loginComp, "Loguje się")
+Rel(users, registerComp, "Rejestruje konto")
+
+' Routing
+Rel(router, home, "Kieruje na /")
+Rel(router, trainingPlans, "Kieruje na /trainingPlans")
+Rel(router, trainingDetails, "Kieruje na /trainingPlans/:id")
+Rel(router, coachList, "Kieruje na /coaches")
+Rel(router, exerciseProgress, "Kieruje na /progress")
+Rel(router, profile, "Kieruje na /profile")
+Rel(router, myClients, "Kieruje na /my-clients")
+Rel(router, adminPanel, "Kieruje na /permissions")
+Rel(router, createPlan, "Kieruje na /create-plan")
+Rel(router, generatePlan, "Kieruje na /generate-plan")
+Rel(router, loginComp, "Kieruje na /login")
+Rel(router, registerComp, "Kieruje na /register")
+
+' Authentication Flow
+Rel(authContext, loginComp, "Zarządza stanem logowania")
+Rel(authContext, registerComp, "Zarządza rejestracją")
+Rel(authContext, navbar, "Dostarcza status uwierzytelnienia")
+Rel(loginComp, apiClient, "POST /auth/login")
+Rel(registerComp, apiClient, "POST /auth/register")
+
+' Feature Components API Calls
+Rel(trainingPlans, apiClient, "GET/POST /training-plans")
+Rel(trainingDetails, apiClient, "GET /training-plans/:id")
+Rel(exerciseProgress, apiClient, "GET /metrics/recent-exercises")
+Rel(coachList, apiClient, "GET /coaches, POST /coaches/{id}/request")
+Rel(myClients, apiClient, "GET /coach/clients")
+Rel(createPlan, apiClient, "POST /training-plans")
+Rel(generatePlan, apiClient, "POST /training/generate")
+Rel(profile, apiClient, "GET/PUT /users/me")
+Rel(adminPanel, apiClient, "Admin API endpoints")
+
+' Component Relationships
+Rel(navbar, authContext, "Sprawdza status uwierzytelnienia")
+
+' API Layer
+Rel(apiClient, apiHelpers, "Używa utilities")
+Rel(apiClient, backend, "HTTP requests", "JSON/HTTPS")
+Rel(authContext, apiClient, "GET /security/status")
+
+@enduml
+
+@startuml PureLift-C4-Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title PureLift System - C4 Context Diagram
+
+Person(user, "User/Client", "Użytkownik aplikacji fitness")
+Person(coach, "Coach/Trainer", "Trener personalny")
+Person(admin, "Administrator", "Administrator systemu")
+
+System(purelift, "PureLift System", "System zarządzania treningiem personalnym")
+
+System_Ext(email, "Email System", "System wysyłania wiadomości email")
+System_Ext(browser, "Web Browser", "Przeglądarka internetowa")
+
+Rel(user, purelift, "Zarządza planami treningowymi", "HTTPS/JSON")
+Rel(coach, purelift, "Tworzy plany, monitoruje klientów", "HTTPS/JSON")
+Rel(admin, purelift, "Administruje systemem", "HTTPS/JSON")
+
+Rel(purelift, email, "Wysyła powiadomienia", "SMTP")
+Rel_Back(browser, purelift, "Dostęp przez frontend", "HTTPS")
+
+@enduml
+
+@startuml PureLift-C4-Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title PureLift System - C4 Container Diagram
+
+Person(user, "Users", "Użytkownicy, Trenerzy, Administratorzy")
+
+System_Boundary(purelift, "PureLift System") {
+    Container(frontend, "Frontend Application", "React/Vite", "Single Page Application dla zarządzania treningiem")
+    Container(backend, "Backend API", "Spring Boot 3.2.5", "REST API z uwierzytelnianiem JWT")
+    ContainerDb(database, "Database", "H2/PostgreSQL", "Przechowuje dane użytkowników, planów treningowych")
+    Container(messaging, "Message Queue", "RabbitMQ", "Asynchroniczne przetwarzanie wiadomości email")
+}
+
+System_Ext(email, "Email Service", "Zewnętrzny system email")
+
+Rel(user, frontend, "Korzysta z aplikacji", "HTTPS")
+Rel(frontend, backend, "Komunikacja API", "HTTPS/JSON")
+Rel(backend, database, "Odczytuje/zapisuje dane", "JDBC")
+Rel(backend, messaging, "Publikuje wiadomości", "AMQP")
+Rel(messaging, email, "Wysyła email", "SMTP")
+
+@enduml
+@startuml PureLift-C4-Backend-Complete
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title PureLift Backend - C4 Component Diagram (Simplified)
+
+Container(frontend, "Frontend", "React/Vite", "Aplikacja kliencka")
+ContainerDb(database, "Database", "H2/PostgreSQL", "Baza danych")
+Container(messaging, "RabbitMQ", "Message Queue", "Kolejka wiadomości")
+
+Container_Boundary(backend, "Spring Boot Backend") {
+    
+    ' Security Layer
+    Component(jwtFilter, "JWT Filter", "JwtAuthenticationFilter", "Filtruje i waliduje tokeny JWT")
+    Component(securityConfig, "Security Config", "SecurityConfiguration", "Konfiguracja Spring Security")
+    
+    ' Controllers Layer - API Endpoints
+    Component(securityController, "Security Controller", "SecurityController", "/api/security/* - Auth endpoints")
+    Component(authController, "Auth Controller", "AuthController", "/api/auth/* - Account confirmation")
+    Component(userController, "User Controller", "UserController", "/api/users/* - User management")
+    Component(trainingPlanController, "TrainingPlan Controller", "TrainingPlanController", "/api/training/* - Training plans")
+    Component(coachController, "Coach Controller", "CoachController", "/api/coaches/* - Coach management")
+    Component(metricsController, "Metrics Controller", "MetricsController", "/api/metrics/* - Progress tracking")
+    Component(catalogController, "Catalog Controller", "CatalogController", "/api/catalog/* - Exercise catalog")
+    
+    ' Services Layer - Business Logic
+    Component(authService, "Authentication Service", "AuthenticationService", "Logika uwierzytelniania i JWT")
+    Component(userService, "User Service", "UserService", "Zarządzanie użytkownikami")
+    Component(trainingService, "Training Service", "TrainingService", "Logika planów treningowych")
+    Component(exerciseService, "Exercise Service", "ExerciseService", "Logika ćwiczeń")
+    Component(coachRequestService, "Coach Request Service", "CoachRequestService", "Wnioski trenerskie")
+    Component(metricsService, "Metrics Service", "MetricsService", "Obliczanie postępów")
+    Component(jwtService, "JWT Service", "JwtService", "Generowanie tokenów JWT")
+    Component(emailProducer, "Email Producer", "EmailProducer", "Wysyłanie emaili")
+    
+
+    
+    ' Repository Layer - Data Access
+    Component(userRepo, "User Repository", "UserRepository", "CRUD: users table")
+    Component(trainingPlanRepo, "TrainingPlan Repository", "TrainingPlanRepository", "CRUD: training_plan table")
+    Component(trainingDayRepo, "TrainingDay Repository", "TrainingDayRepository", "CRUD: training_day table")
+    Component(exerciseRepo, "Exercise Repository", "ExerciseRepository", "CRUD: exercise table")
+    Component(exerciseTemplateRepo, "ExerciseTemplate Repository", "ExerciseTemplateRepository", "CRUD: exercise_template table")
+    Component(muscleRepo, "Muscle Repository", "MuscleRepository", "CRUD: muscle table")
+    Component(exerciseTemplateMuscleRepo, "ExerciseTemplateMuscle Repository", "ExerciseTemplateMuscleRepository", "CRUD: exercise_template_muscle table")
+    Component(coachRequestRepo, "Coach Request Repository", "CoachRequestRepository", "CRUD: coach_requests")
+    Component(tokenRepo, "Token Repository", "TokenRepository", "CRUD: verification_token")
+}
+
+' Frontend to Backend API calls
+Rel(frontend, securityController, "API uwierzytelniania", "HTTPS/JSON")
+Rel(frontend, userController, "API użytkowników", "HTTPS/JSON")
+Rel(frontend, trainingPlanController, "API treningów", "HTTPS/JSON")
+Rel(frontend, coachController, "API trenerów", "HTTPS/JSON")
+Rel(frontend, metricsController, "API metryk", "HTTPS/JSON")
+Rel(frontend, catalogController, "API katalogu", "HTTPS/JSON")
+
+' Security Infrastructure
+Rel(securityConfig, jwtFilter, "Konfiguruje filtr JWT")
+Rel(securityConfig, securityController, "Definiuje uprawnienia")
+Rel(jwtFilter, jwtService, "Waliduje tokeny")
+Rel(securityController, authService, "Logika uwierzytelniania")
+Rel(authController, authService, "Potwierdzanie email")
+
+' Controller to Service Mappings
+Rel(userController, userService, "Operacje użytkowników")
+Rel(trainingPlanController, trainingService, "Operacje treningowe")
+Rel(coachController, coachRequestService, "Wnioski trenerskie")
+Rel(metricsController, metricsService, "Obliczanie metryk")
+Rel(catalogController, exerciseTemplateRepo, "Szablony ćwiczeń")
+Rel(catalogController, muscleRepo, "Grupy mięśniowe")
+Rel(catalogController, exerciseTemplateMuscleRepo, "Relacje ćwiczenia-mięśnie")
+
+' Key Service Dependencies
+Rel(authService, jwtService, "Generowanie tokenów")
+Rel(authService, emailProducer, "Wysyłanie emaili")
+Rel(trainingService, exerciseService, "Zarządzanie ćwiczeniami")
+Rel(coachRequestService, userService, "Wyszukiwanie użytkowników")
+
+' Service to Repository Mappings
+Rel(authService, userRepo, "Uwierzytelnianie użytkowników")
+Rel(authService, tokenRepo, "Zarządzanie tokenami")
+Rel(userService, userRepo, "CRUD użytkowników")
+Rel(trainingService, trainingPlanRepo, "Plany treningowe")
+Rel(trainingService, trainingDayRepo, "Dni treningowe")
+Rel(trainingService, exerciseTemplateRepo, "Szablony ćwiczeń")
+Rel(exerciseService, exerciseRepo, "Dane ćwiczeń")
+Rel(coachRequestService, coachRequestRepo, "Wnioski trenerskie")
+Rel(coachRequestService, userRepo, "Użytkownicy")
+Rel(metricsService, exerciseRepo, "Metryki ćwiczeń")
+
+' Database Access
+Rel(userRepo, database, "Zapytania SQL")
+Rel(trainingPlanRepo, database, "Zapytania SQL")
+Rel(trainingDayRepo, database, "Zapytania SQL")
+Rel(exerciseRepo, database, "Zapytania SQL")
+Rel(exerciseTemplateRepo, database, "Zapytania SQL")
+Rel(muscleRepo, database, "Zapytania SQL")
+Rel(exerciseTemplateMuscleRepo, database, "Zapytania SQL")
+Rel(coachRequestRepo, database, "Zapytania SQL")
+Rel(tokenRepo, database, "Zapytania SQL")
+
+' Messaging
+Rel(emailProducer, messaging, "Wiadomości email", "AMQP")
+
+@enduml
+
+@startuml PureLift-Database-ERD
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define primary_key(x) <u>x</u>
+!define foreign_key(x) <color:red>x</color>
+!define unique(x) <color:green>x</color>
+
+title PureLift Database - Entity Relationship Diagram
+
+Table(users, "users") {
+  primary_key(id): BIGINT
+  unique(email): VARCHAR
+  name: VARCHAR
+  lastname: VARCHAR  
+  username: VARCHAR
+  password: VARCHAR
+  appuser_role: VARCHAR
+  enabled: BOOLEAN
+  locked: BOOLEAN
+  foreign_key(coach_id): BIGINT
+}
+
+Table(training_plan, "training_plan") {
+  primary_key(id): BIGINT
+  title: VARCHAR
+  foreign_key(user_id): BIGINT
+}
+
+Table(training_day, "training_day") {
+  primary_key(id): BIGINT
+  day_number: INTEGER
+  foreign_key(training_plan_id): BIGINT
+}
+
+Table(exercise_template, "exercise_template") {
+  primary_key(id): BIGINT
+  name: VARCHAR
+  description: TEXT
+}
+
+Table(exercise, "exercise") {
+  primary_key(id): BIGINT
+  reps: INTEGER
+  sets: INTEGER
+  weight: INTEGER
+  intensity: INTEGER
+  foreign_key(exercise_template_id): BIGINT
+  foreign_key(training_day_id): BIGINT
+}
+
+Table(muscle, "muscle") {
+  primary_key(id): BIGINT
+  name: VARCHAR
+}
+
+Table(exercise_template_muscle, "exercise_template_muscle") {
+  primary_key(id): BIGINT
+  foreign_key(exercise_template_id): BIGINT
+  foreign_key(muscle_id): BIGINT
+  intensity: INTEGER
+}
+
+Table(coach_requests, "coach_requests") {
+  primary_key(id): BIGINT
+  foreign_key(client_id): BIGINT
+  foreign_key(coach_id): BIGINT
+  message: TEXT
+  status: VARCHAR
+  created_at: TIMESTAMP
+}
+
+Table(verification_token, "verification_token") {
+  primary_key(token): VARCHAR
+  expiry_date: TIMESTAMP
+  foreign_key(user_id): BIGINT
+}
+
+' Relationships
+users ||--o{ training_plan : "has many"
+users ||--o{ users : "coaches clients"
+training_plan ||--o{ training_day : "contains"
+training_day ||--o{ exercise : "includes"
+exercise_template ||--o{ exercise : "template for"
+exercise_template ||--o{ exercise_template_muscle : "targets"
+muscle ||--o{ exercise_template_muscle : "used in"
+users ||--o{ coach_requests : "client requests"
+users ||--o{ coach_requests : "coach receives"
+users ||--o{ verification_token : "has token"
+
+@enduml

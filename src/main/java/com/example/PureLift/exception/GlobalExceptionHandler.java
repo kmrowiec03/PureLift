@@ -8,16 +8,6 @@ import org.springframework.web.bind.annotation.*;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ArticleNotFoundException.class)
-    public ResponseEntity<ApiError> handleArticleNotFound(ArticleNotFoundException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(
-                HttpStatus.NOT_FOUND.value(),
-                "Not Found",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
     @ExceptionHandler(TrainingPlanNotFoundException.class)
     public ResponseEntity<ApiError> handleTrainingPlanNotFound(TrainingPlanNotFoundException ex, HttpServletRequest request) {
         ApiError error = new ApiError(

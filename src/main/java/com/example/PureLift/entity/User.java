@@ -44,9 +44,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TrainingPlan> trainingPlans;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Article> articles;
-
     @ManyToOne
     @JoinColumn(name = "coach_id")
     private User coach;
