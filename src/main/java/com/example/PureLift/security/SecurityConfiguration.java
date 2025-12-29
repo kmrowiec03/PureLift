@@ -40,12 +40,19 @@ public class SecurityConfiguration {
                                 "/webjars/**"
                         ).permitAll()
                         .requestMatchers("/api/security/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/articles/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/articles/**").hasRole("ADMIN")
-                        .requestMatchers("/api/training/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/coaches/{coachId}/join").hasAnyRole("USER", "ADMIN", "COACH")
+                        .requestMatchers(HttpMethod.POST,"/api/coaches/{coachId}/request").hasAnyRole("USER", "ADMIN", "COACH")
+                        .requestMatchers(HttpMethod.GET,"/api/coaches/requests").hasAnyRole("ADMIN", "COACH")
+                        .requestMatchers(HttpMethod.POST,"/api/coaches/requests/{requestId}/accept").hasAnyRole("ADMIN", "COACH")
+                        .requestMatchers(HttpMethod.POST,"/api/coaches/requests/{requestId}/reject").hasAnyRole("ADMIN", "COACH")
+                        .requestMatchers(HttpMethod.GET,"/api/coaches/**").hasAnyRole("USER", "ADMIN", "COACH")
+                        .requestMatchers(HttpMethod.POST,"/api/coaches/{coachId}/clients").hasAnyRole("ADMIN", "COACH")
+                        .requestMatchers(HttpMethod.DELETE,"/api/coaches/**").hasAnyRole("ADMIN", "COACH")
+                        .requestMatchers("/api/training/**").hasAnyRole("USER", "ADMIN", "COACH")
+                        .requestMatchers("/api/metrics/**").hasAnyRole("USER", "ADMIN", "COACH")
 
 
-                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("USER", "ADMIN", "COACH")
                         .requestMatchers(HttpMethod.POST, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/users/**").hasRole("ADMIN")

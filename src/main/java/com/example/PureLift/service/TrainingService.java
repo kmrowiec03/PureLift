@@ -4,6 +4,7 @@ package com.example.PureLift.service;
 import com.example.PureLift.dto.*;
 import com.example.PureLift.entity.*;
 import com.example.PureLift.exception.TrainingPlanNotFoundException;
+import com.example.PureLift.repository.CoachRequestRepository;
 import com.example.PureLift.repository.ExerciseRepository;
 import com.example.PureLift.repository.ExerciseTemplateRepository;
 import com.example.PureLift.repository.TrainingDayRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,15 +24,18 @@ public class TrainingService {
     private TrainingDayRepository trainingDayRepository;
     private ExerciseTemplateRepository exerciseTemplateRepository;
     private UserRepository userRepository;
+    private CoachRequestRepository coachRequestRepository;
 
     public TrainingService(TrainingPlanRepository trainingPlanRepository,
                            TrainingDayRepository trainingDayRepository,
                            ExerciseTemplateRepository exerciseTemplateRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           CoachRequestRepository coachRequestRepository) {
         this.trainingPlanRepository = trainingPlanRepository;
         this.trainingDayRepository = trainingDayRepository;
         this.exerciseTemplateRepository = exerciseTemplateRepository;
         this.userRepository = userRepository;
+        this.coachRequestRepository = coachRequestRepository;
     }
     public TrainingPlan getTrainingPlanById(Long id) {
         return trainingPlanRepository.findById(id).orElse(null);
@@ -318,20 +323,21 @@ public class TrainingService {
     }
 
     public TrainingPlan assignPlanToUser(User coach, ManualTrainingPlanRequest request) {
-        // Sprawdź czy coach ma rolę COACH
+        // Sprawdź czy coach ma rolę COACH lub ADMIN
         boolean hasCoachRole = coach.getAppuserRole().name().equals("ROLE_COACH");
-        if (!hasCoachRole) {
-            throw new SecurityException("Tylko użytkownicy z rolą COACH mogą przypisywać plany innym użytkownikom");
+        boolean hasAdminRole = coach.getAppuserRole().name().equals("ROLE_ADMIN");
+        if (!hasCoachRole && !hasAdminRole) {
+            throw new SecurityException("Tylko użytkownicy z rolą COACH lub ADMIN mogą przypisywać plany innym użytkownikom");
         }
 
         // Sprawdź czy podano email użytkownika docelowego
-        if (request.getTargetUserEmail() == null || request.getTargetUserEmail().trim().isEmpty()) {
+        if (request.getUserEmail() == null || request.getUserEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email użytkownika docelowego jest wymagany");
         }
 
         // Znajdź użytkownika docelowego
-        User targetUser = userRepository.findByEmail(request.getTargetUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono użytkownika: " + request.getTargetUserEmail()));
+        User targetUser = userRepository.findByEmail(request.getUserEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Nie znaleziono użytkownika: " + request.getUserEmail()));
 
         // Utwórz plan dla użytkownika docelowego
         TrainingPlan plan = new TrainingPlan();
@@ -369,7 +375,21 @@ public class TrainingService {
         }
 
         plan.setTrainingDays(days);
-        return trainingPlanRepository.save(plan);
+        TrainingPlan savedPlan = trainingPlanRepository.save(plan);
+        
+        // Automatycznie zaakceptuj request jeśli istnieje
+        Optional<CoachRequest> pendingRequest = coachRequestRepository.findByClientIdAndCoachIdAndStatus(
+            targetUser.getId(), 
+            coach.getId(), 
+            CoachRequest.RequestStatus.PENDING
+        );
+        
+        pendingRequest.ifPresent(req -> {
+            req.setStatus(CoachRequest.RequestStatus.ACCEPTED);
+            coachRequestRepository.save(req);
+        });
+        
+        return savedPlan;
     }
 
 }

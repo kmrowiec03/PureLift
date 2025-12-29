@@ -9,5 +9,5 @@ import java.util.List;
 public class ManualTrainingPlanRequest {
     private String title;
     private List<ManualTrainingDayRequest> days;
-    private String targetUserEmail; // opcjonalne - dla coachów przypisujących plan innemu użytkownikowi
+    private String userEmail; // opcjonalne - dla coachów przypisujących plan innemu użytkownikowi
 }
