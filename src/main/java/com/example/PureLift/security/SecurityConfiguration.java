@@ -40,6 +40,8 @@ public class SecurityConfiguration {
                                 "/webjars/**"
                         ).permitAll()
                         .requestMatchers("/api/security/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/metrics/populate-test-data").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/metrics/create-test-users").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/coaches/{coachId}/join").hasAnyRole("USER", "ADMIN", "COACH")
                         .requestMatchers(HttpMethod.POST,"/api/coaches/{coachId}/request").hasAnyRole("USER", "ADMIN", "COACH")
                         .requestMatchers(HttpMethod.GET,"/api/coaches/requests").hasAnyRole("ADMIN", "COACH")

@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 @Service
 public class TrainingService {
     private TrainingPlanRepository trainingPlanRepository;
-    private TrainingDayRepository trainingDayRepository;
     private ExerciseTemplateRepository exerciseTemplateRepository;
     private UserRepository userRepository;
     private CoachRequestRepository coachRequestRepository;
@@ -32,7 +31,6 @@ public class TrainingService {
                            UserRepository userRepository,
                            CoachRequestRepository coachRequestRepository) {
         this.trainingPlanRepository = trainingPlanRepository;
-        this.trainingDayRepository = trainingDayRepository;
         this.exerciseTemplateRepository = exerciseTemplateRepository;
         this.userRepository = userRepository;
         this.coachRequestRepository = coachRequestRepository;

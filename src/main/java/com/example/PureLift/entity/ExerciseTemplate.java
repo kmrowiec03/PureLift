@@ -18,8 +18,6 @@ public class ExerciseTemplate {
     @OneToMany(mappedBy = "exerciseTemplate")
     private List<Exercise> exercises;
 
-    // Gettery i settery
-
     public Long getId() {
         return id;
     }

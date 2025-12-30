@@ -1,5 +1,6 @@
 package com.example.PureLift.service;
 
+import com.example.PureLift.dto.MaxWeightExerciseDTO;
 import com.example.PureLift.dto.RecentExerciseDTO;
 import com.example.PureLift.dto.TonnageDataDTO;
 import com.example.PureLift.entity.Exercise;
@@ -80,5 +81,64 @@ public class MetricsService {
         }
         
         return result;
+    }
+
+    public List<MaxWeightExerciseDTO> getMaxWeightsForUser(Long userId) {
+        List<Exercise> userExercises = exerciseRepository.findByTrainingDay_TrainingPlan_User_Id(userId);
+        
+        Map<String, Map<Integer, Double>> exerciseMaxWeights = new HashMap<>();
+        
+        for (Exercise exercise : userExercises) {
+            if (exercise.getWeight() != null && exercise.getWeight() > 0) {
+                String exerciseName = exercise.getExerciseTemplate().getName();
+                int reps = exercise.getReps();
+                double weight = exercise.getWeight();
+                
+                exerciseMaxWeights.putIfAbsent(exerciseName, new HashMap<>());
+                Map<Integer, Double> repWeights = exerciseMaxWeights.get(exerciseName);
+                
+                // Jeśli ktoś zrobił X powtórzeń z Y kg, to dla wszystkich ≤X powtórzeń max ciężar to co najmniej Y kg
+                if (reps >= 5) {
+                    repWeights.put(5, Math.max(repWeights.getOrDefault(5, 0.0), weight));
+                    repWeights.put(3, Math.max(repWeights.getOrDefault(3, 0.0), weight));
+                    repWeights.put(1, Math.max(repWeights.getOrDefault(1, 0.0), weight));
+                } else if (reps >= 3) {
+                    repWeights.put(3, Math.max(repWeights.getOrDefault(3, 0.0), weight));
+                    repWeights.put(1, Math.max(repWeights.getOrDefault(1, 0.0), weight));
+                } else if (reps >= 1) {
+                    repWeights.put(1, Math.max(repWeights.getOrDefault(1, 0.0), weight));
+                }
+            }
+        }
+        
+        List<MaxWeightExerciseDTO> result = new ArrayList<>();
+        for (Map.Entry<String, Map<Integer, Double>> entry : exerciseMaxWeights.entrySet()) {
+            String exerciseName = entry.getKey();
+            Map<Integer, Double> weights = entry.getValue();
+            
+            // Pobieramy opis ćwiczenia
+            String description = userExercises.stream()
+                .filter(ex -> ex.getExerciseTemplate().getName().equals(exerciseName))
+                .findFirst()
+                .map(ex -> ex.getExerciseTemplate().getDescription())
+                .orElse("");
+            
+            MaxWeightExerciseDTO dto = new MaxWeightExerciseDTO(
+                exerciseName,
+                weights.get(1),
+                weights.get(3),
+                weights.get(5),
+                description
+            );
+            
+            // Dodajemy tylko jeśli mamy przynajmniej jeden ciężar
+            if (dto.getMaxWeight1Rep() != null || dto.getMaxWeight3Rep() != null || dto.getMaxWeight5Rep() != null) {
+                result.add(dto);
+            }
+        }
+        
+        return result.stream()
+                .sorted(Comparator.comparing(MaxWeightExerciseDTO::getExerciseName))
+                .collect(Collectors.toList());
     }
 }

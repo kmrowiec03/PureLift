@@ -71,15 +71,14 @@ class ExerciseServiceTest {
 
     @Test
     void updateExerciseWeight_ShouldUpdateAndSave() {
-        // Given
+        
         expect(mockExerciseRepository.findById(1L)).andReturn(Optional.of(testExercise));
         expect(mockExerciseRepository.save(testExercise)).andReturn(testExercise);
         replay(mockExerciseRepository);
 
-        // When
+        
         exerciseService.updateExerciseWeight(1L, 120.0);
 
-        // Then
         assertEquals(120.0, testExercise.getWeight());
     }
 

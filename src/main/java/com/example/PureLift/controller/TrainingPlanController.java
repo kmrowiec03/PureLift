@@ -7,8 +7,6 @@ import com.example.PureLift.dto.TrainingPlanDTO;
 import com.example.PureLift.dto.TrainingPlanRequest;
 import com.example.PureLift.dto.WeightUpdateRequest;
 import com.example.PureLift.dto.ManualTrainingPlanRequest;
-import com.example.PureLift.dto.ManualTrainingDayRequest;
-import com.example.PureLift.dto.ManualExerciseRequest;
 import com.example.PureLift.dto.ExerciseCompletionRequest;
 import com.example.PureLift.entity.Exercise;
 import com.example.PureLift.entity.TrainingDay;
@@ -22,24 +20,24 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/training")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class TrainingPlanController {
+
    private final TrainingService trainingService;
    private final ExerciseService exerciseService;
 
    public TrainingPlanController(TrainingService trainingService, ExerciseService exerciseService) {
        this.trainingService = trainingService;
        this.exerciseService = exerciseService;
-   }
+    }
+
     @GetMapping
     public ResponseEntity<List<TrainingPlanDTO>> getAllTrainingPlans() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -49,6 +47,7 @@ public class TrainingPlanController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(plans);
     }
+
     @GetMapping("/{planId}")
     public ResponseEntity<TrainingPlanDTO> getTrainingPlan(@PathVariable Long planId) {
         TrainingPlan trainingPlan = trainingService.getTrainingPlanById(planId);
@@ -57,6 +56,7 @@ public class TrainingPlanController {
         }
         return ResponseEntity.ok(trainingService.convertToDTO(trainingPlan));
     }
+
     @GetMapping("/{planId}/{dayId}")
     public ResponseEntity<List<Exercise>> getExercisesForDay(@PathVariable Long planId, @PathVariable Long dayId) {
         TrainingDay trainingDay = trainingService.getTrainingDayById(planId, dayId);
@@ -66,6 +66,7 @@ public class TrainingPlanController {
         List<Exercise> exercises = exerciseService.getExercisesByTrainingDay(dayId);
         return ResponseEntity.ok(exercises);
     }
+    
     @PutMapping("/exercise/{exerciseId}/weight")
     public ResponseEntity<Void> updateExerciseWeight(@PathVariable Long exerciseId, @RequestBody WeightUpdateRequest request) {
         exerciseService.updateExerciseWeight(exerciseId, request.getWeight());
